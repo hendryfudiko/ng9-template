@@ -6,6 +6,7 @@
     "start": "ng serve angular9-template",
     "build": "ng build angular9-template --prod",
     "test": "ng test angular9-template",
+    "postinstall": "ngcc --properties es2015 module main --first-only",
     "start:project-one": "ng serve project-one",
     "build:project-one": "ng build project-one --prod",
     "test:project-one": "ng test project-one",
