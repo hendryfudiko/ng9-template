@@ -1,27 +1,16 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Project One
+name: Project Two
 
 on:
   pull_request:
     branches: [ master ]
     paths:
       - 'libs/**'
-      - 'projects/project-one/**'
+      - 'projects/project-two/**'
 
 jobs:
-  # manual-trigger-test:
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #     - run: |
-  #         curl \
-  #           -X POST \
-  #           -H "Accept: application/vnd.github.v3+json" \
-  #           -H "Authorization: token ${{ secrets.REPO_SECRET_PAT }}" \
-  #           https://api.github.com/repos/${{ github.repository }}/actions/workflows/manual-trigger.yml/dispatches \
-  #           -d '{"ref":"${{ github.head_ref }}"}'
   install-packages:
     runs-on: ubuntu-latest
 
@@ -51,9 +40,9 @@ jobs:
       id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
       with:
         path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-        key: ${{ runner.os }}-yarn-test-${{ hashFiles('**/yarn.lock') }}
+        key: ${{ runner.os }}-yarn-test${{ hashFiles('**/yarn.lock') }}
         restore-keys: |
-          ${{ runner.os }}-yarn-test-
+          ${{ runner.os }}-yarn-test
     - name: Install Dependencies
       if: steps.yarn-cache.outputs.cache-hit != 'true'
       run: yarn install
