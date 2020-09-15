@@ -11,17 +11,47 @@ on:
       - 'projects/project-one/**'
 
 jobs:
-  # manual-trigger-test:
-  #   runs-on: ubuntu-latest
+  dump-data:
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - run: |
-  #         curl \
-  #           -X POST \
-  #           -H "Accept: application/vnd.github.v3+json" \
-  #           -H "Authorization: token ${{ secrets.REPO_SECRET_PAT }}" \
-  #           https://api.github.com/repos/${{ github.repository }}/actions/workflows/manual-trigger.yml/dispatches \
-  #           -d '{"ref":"${{ github.head_ref }}"}'
+    steps:
+    - name: Dump GitHub context
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: echo "$GITHUB_CONTEXT"
+    - name: Dump job context
+      env:
+        JOB_CONTEXT: ${{ toJson(job) }}
+      run: echo "$JOB_CONTEXT"
+    - name: Dump steps context
+      env:
+        STEPS_CONTEXT: ${{ toJson(steps) }}
+      run: echo "$STEPS_CONTEXT"
+    - name: Dump runner context
+      env:
+        RUNNER_CONTEXT: ${{ toJson(runner) }}
+      run: echo "$RUNNER_CONTEXT"
+    - name: Dump strategy context
+      env:
+        STRATEGY_CONTEXT: ${{ toJson(strategy) }}
+      run: echo "$STRATEGY_CONTEXT"
+    - name: Dump matrix context
+      env:
+        MATRIX_CONTEXT: ${{ toJson(matrix) }}
+      run: echo "$MATRIX_CONTEXT"
+
+  manual-trigger-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - run: |
+          curl \
+            -X POST \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token ${{ secrets.REPO_SECRET_PAT }}" \
+            https://api.github.com/repos/${{ github.repository }}/actions/workflows/manual-trigger.yml/dispatches \
+            -d '{"ref":"${{ github.head_ref }}"}'
+
   install-packages:
     runs-on: ubuntu-latest
 
@@ -51,9 +81,9 @@ jobs:
       id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
       with:
         path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-        key: ${{ runner.os }}-yarn-test-${{ hashFiles('**/yarn.lock') }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
         restore-keys: |
-          ${{ runner.os }}-yarn-test-
+          ${{ runner.os }}-yarn-
     - name: Install Dependencies
       if: steps.yarn-cache.outputs.cache-hit != 'true'
       run: yarn install
