@@ -11,41 +11,52 @@ on:
       - 'projects/project-one/**'
 
 jobs:
-  install-packages:
+  manual-trigger-test:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [10.x]
-
     steps:
-    - uses: actions/checkout@v2
-    - name: Hello world action step
-      uses: ./.github/actions/test-ts-action # Uses an action in the root directory
-      id: hello
-      with:
-        milliseconds: 500
-        token: ${{ secrets.GITHUB_TOKEN }}
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-        always-auth: true
-        registry-url: https://registry.catapa.com
-        scope: '@catapa'
-    - name: Get yarn cache directory path
-      id: yarn-cache-dir-path
-      run: echo "::set-output name=dir::$(yarn cache dir)"
-    - uses: actions/cache@v2
-      id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-      with:
-        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-yarn-
-    - name: Install Dependencies
-      if: steps.yarn-cache.outputs.cache-hit != 'true'
-      run: yarn install
+      - run: |
+          curl \
+            -X POST \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token ${{ secrets.REPO_SECRET_PAT }}" \
+            https://api.github.com/repos/${{ github.repository }}/actions/workflows/manual-trigger.yml/dispatches \
+            -d '{"ref":"${{ github.head_ref }}"}'
+  # install-packages:
+  #   runs-on: ubuntu-latest
+
+  #   strategy:
+  #     matrix:
+  #       node-version: [10.x]
+
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Hello world action step
+  #     uses: ./.github/actions/test-ts-action # Uses an action in the root directory
+  #     id: hello
+  #     with:
+  #       milliseconds: 500
+  #       token: ${{ secrets.GITHUB_TOKEN }}
+  #   - name: Use Node.js ${{ matrix.node-version }}
+  #     uses: actions/setup-node@v1
+  #     with:
+  #       node-version: ${{ matrix.node-version }}
+  #       always-auth: true
+  #       registry-url: https://registry.catapa.com
+  #       scope: '@catapa'
+  #   - name: Get yarn cache directory path
+  #     id: yarn-cache-dir-path
+  #     run: echo "::set-output name=dir::$(yarn cache dir)"
+  #   - uses: actions/cache@v2
+  #     id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+  #     with:
+  #       path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+  #       key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+  #       restore-keys: |
+  #         ${{ runner.os }}-yarn-
+  #   - name: Install Dependencies
+  #     if: steps.yarn-cache.outputs.cache-hit != 'true'
+  #     run: yarn install
       # env:
         # NODE_AUTH_TOKEN: ${{ secrets.CATAPA_REGISTRY_TOKEN }}
 
