@@ -4,11 +4,11 @@
 name: Project Two
 
 on:
-  workflow_run:
-    workflows: ["Project One"]
-    types:
-      - completed
-      - requested
+  pull_request:
+    # branches: [ master ]
+    paths:
+      - "libs/**"
+      - "projects/project-two/**"
 
 jobs:
   install-packages:
@@ -20,35 +20,35 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Hello world action step
-      uses: ./.github/actions/test-ts-action # Uses an action in the root directory
-      id: hello
-      with:
-        milliseconds: 500
-        token: ${{ secrets.GITHUB_TOKEN }}
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-        always-auth: true
-        registry-url: https://registry.catapa.com
-        scope: '@catapa'
+    # - name: Hello world action step
+    #   uses: ./.github/actions/test-ts-action # Uses an action in the root directory
+    #   id: hello
+    #   with:
+    #     milliseconds: 500
+    #     token: ${{ secrets.GITHUB_TOKEN }}
+    # - name: Use Node.js ${{ matrix.node-version }}
+    #   uses: actions/setup-node@v1
+    #   with:
+    #     node-version: ${{ matrix.node-version }}
+    #     always-auth: true
+    #     registry-url: https://registry.catapa.com
+    #     scope: '@catapa'
 
-    - name: Get yarn cache directory path
-      id: yarn-cache-dir-path
-      run: echo "::set-output name=dir::$(yarn cache dir)"
+    # - name: Get yarn cache directory path
+    #   id: yarn-cache-dir-path
+    #   run: echo "::set-output name=dir::$(yarn cache dir)"
 
-    - uses: actions/cache@v2
-      id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-      with:
-        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-yarn-
+    # - uses: actions/cache@v2
+    #   id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+    #   with:
+    #     path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+    #     key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+    #     restore-keys: |
+    #       ${{ runner.os }}-yarn-
 
-    - name: Install Dependencies
-      if: steps.yarn-cache.outputs.cache-hit != 'true'
-      run: yarn install
+    # - name: Install Dependencies
+    #   if: steps.yarn-cache.outputs.cache-hit != 'true'
+    #   run: yarn install
       # env:
         # NODE_AUTH_TOKEN: ${{ secrets.CATAPA_REGISTRY_TOKEN }}
 
