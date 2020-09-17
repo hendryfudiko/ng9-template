@@ -1,0 +1,252 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Project One
+
+on:
+  pull_request:
+    # branches: [ master ]
+    paths:
+      - "libs/**"
+      - "projects/project-one/**"
+
+jobs:
+  # dump-data:
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #   - name: Dump GitHub context
+  #     env:
+  #       GITHUB_CONTEXT: ${{ toJson(github) }}
+  #     run: echo "$GITHUB_CONTEXT"
+  #   - name: Dump job context
+  #     env:
+  #       JOB_CONTEXT: ${{ toJson(job) }}
+  #     run: echo "$JOB_CONTEXT"
+  #   - name: Dump steps context
+  #     env:
+  #       STEPS_CONTEXT: ${{ toJson(steps) }}
+  #     run: echo "$STEPS_CONTEXT"
+  #   - name: Dump runner context
+  #     env:
+  #       RUNNER_CONTEXT: ${{ toJson(runner) }}
+  #     run: echo "$RUNNER_CONTEXT"
+  #   - name: Dump strategy context
+  #     env:
+  #       STRATEGY_CONTEXT: ${{ toJson(strategy) }}
+  #     run: echo "$STRATEGY_CONTEXT"
+  #   - name: Dump matrix context
+  #     env:
+  #       MATRIX_CONTEXT: ${{ toJson(matrix) }}
+  #     run: echo "$MATRIX_CONTEXT"
+
+  # manual-trigger-test:
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - run: |
+  #         curl \
+  #           -X POST \
+  #           -H "Accept: application/vnd.github.v3+json" \
+  #           -H "Authorization: token ${{ secrets.REPO_SECRET_PAT }}" \
+  #           https://api.github.com/repos/${{ github.repository }}/actions/workflows/manual-trigger.yml/dispatches \
+  #           -d '{"ref":"${{ github.head_ref }}"}'
+
+  spawn-check:
+    name: Check Suite 1
+    runs-on: ubuntu-latest
+
+    steps:
+      - run: |
+          echo ${{ github.event.after }}
+          curl \
+            -X POST \
+            -H "Accept: application/vnd.github.antiope-preview+json" \
+            -H "Authorization: token ${{ github.token }}" \
+            https://api.github.com/repos/${{ github.repository }}/check-suites \
+            -d '{"head_sha": "${{ github.event.after }}" }'
+
+          curl \
+            -X POST \
+            -H "Accept: application/vnd.github.antiope-preview+json" \
+            -H "Authorization: token ${{ github.token }}" \
+            https://api.github.com/repos/${{ github.repository }}/check-runs \
+            -d '{"name":"test-one", "head_sha":"${{ github.event.after }}", "conclusion": "success"}'
+
+  spawn-check-2:
+    name: Check Suite 2
+    runs-on: ubuntu-latest
+
+    steps:
+      - run: |
+          echo ${{ github.event.after }}
+          curl \
+            -H "Accept: application/vnd.github.antiope-preview+json" \
+            -H "Authorization: token ${{ github.token }}" \
+            https://api.github.com/repos/${{ github.repository }}/commits/${{ github.event.after }}/check-suites
+
+  spawn-check-3:
+    name: Spawn Check 1
+    runs-on: ubuntu-latest
+
+    steps:
+      - run: |
+          echo ${{ github.event.after }}
+          curl \
+            -X POST \
+            -H "Accept: application/vnd.github.antiope-preview+json" \
+            -H "Authorization: token ${{ github.token }}" \
+            https://api.github.com/repos/${{ github.repository }}/check-runs \
+            -d '{"name":"test-two", "head_sha":"${{ github.event.after }}", "conclusion": "success"}'
+
+  # install-dependencies:
+  #   name: Install Dependencies
+  #   runs-on: ubuntu-latest
+
+  #   strategy:
+  #     matrix:
+  #       node-version: [10.x]
+
+  #   steps:
+  #     - uses: actions/checkout@v2
+
+  #     - name: Run check.sh
+  #       run: |
+  #         chmod -x ./.github/actions/check.sh
+  #         /bin/bash ./.github/actions/check.sh "hello"
+
+  #     - name: Use Node.js ${{ matrix.node-version }}
+  #       uses: actions/setup-node@v1
+  #       with:
+  #         node-version: ${{ matrix.node-version }}
+  #         always-auth: true
+  #         registry-url: https://registry.catapa.com
+  #         scope: "@catapa"
+
+  #     - name: Get yarn cache directory path
+  #       id: yarn-cache-dir-path
+  #       run: echo "::set-output name=dir::$(yarn cache dir)"
+
+  #     - uses: actions/cache@v2
+  #       id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+  #       with:
+  #         path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+  #         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-yarn-
+
+  #     - uses: actions/cache@v2
+  #       id: node-modules
+  #       with:
+  #         path: |
+  #           **/node_modules
+  #           !**/node_modules/.cache
+  #         key: ${{ runner.os }}-node-modules-${{ hashFiles('**/yarn.lock') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-node-modules-
+
+  #     - name: Install Dependencies
+  #       if: steps.node-modules.outputs.cache-hit != 'true'
+  #       run: yarn install
+
+  #     - name: Print .npmrc
+  #       run: |
+  #         echo '-------'
+  #         ls -a $HOME
+  #         echo '-------'
+  #         cat /home/runner/work/_temp/.npmrc
+
+  # replace-environment:
+  #   name: Replace Environment
+
+  #   runs-on: ubuntu-latest
+
+  #   needs: [install-dependencies]
+
+  #   steps:
+  #     - uses: actions/checkout@v2
+
+  #     # - name: Replace BUILD_NUMBER
+  #     #   run: |
+  #     #     echo "Updating Build Number in 'projects/shared/environments/environment.prod.ts'"
+  #     #     sed -i "s|__NODE_ENV.__CATAPA_BUILD_NUMBER__|${{ github.run_number }}|g" projects/shared/environments/environment.prod.ts
+
+  #     #     echo "Updating Build Number in 'projects/catapa-landing-page/app/main.bundle.js'"
+  #     #     sed -i "s|__NODE_ENV.__CATAPA_BUILD_NUMBER__|${{ github.run_number }}|g" projects/catapa-landing-page/app/main.bundle.js
+
+  # lint:
+  #   name: Run Lint
+  #   runs-on: ubuntu-latest
+  #   needs: [install-dependencies]
+
+  #   steps:
+  #     - uses: actions/checkout@v2
+
+  #     - uses: actions/cache@v2
+  #       id: node-modules
+  #       with:
+  #         path: |
+  #           **/node_modules
+  #           !**/node_modules/.cache
+  #         key: ${{ runner.os }}-node-modules-${{ hashFiles('**/yarn.lock') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-node-modules-
+
+  #     # - name: Hello world action step
+  #     #   uses: ./.github/actions/test-ts-action # Uses an action in the root directory
+  #     #   id: hello
+  #     #   with:
+  #     #     milliseconds: 500
+  #     #     token: ${{ secrets.GITHUB_TOKEN }}
+
+  #     - name: Run Lint Project
+  #       run: yarn lint:project-one
+
+  # test:
+  #   name: Run Unit Test
+  #   runs-on: ubuntu-latest
+  #   needs: [install-dependencies]
+
+  #   steps:
+  #     - uses: actions/checkout@v2
+
+  #     - uses: actions/cache@v2
+  #       id: node-modules
+  #       with:
+  #         path: |
+  #           **/node_modules
+  #           !**/node_modules/.cache
+  #         key: ${{ runner.os }}-node-modules-${{ hashFiles('**/yarn.lock') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-node-modules-
+
+  #     - name: Run Test Project
+  #       run: yarn test:project-one
+
+  # build:
+  #   name: Building Artifact
+  #   runs-on: ubuntu-latest
+  #   needs: [install-dependencies, lint, test, replace-environment]
+
+  #   steps:
+  #     - uses: actions/checkout@v2
+
+  #     - uses: actions/cache@v2
+  #       id: node-modules
+  #       with:
+  #         path: |
+  #           **/node_modules
+  #           !**/node_modules/.cache
+  #         key: ${{ runner.os }}-node-modules-${{ hashFiles('**/yarn.lock') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-node-modules-
+
+  #     - name: Run Build Project
+  #       run: yarn build:project-one
+
+  #     - name: Upload Artifact
+  #       if: ${{ success() }}
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: project-one
+  #         path: dist/project-one/
