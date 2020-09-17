@@ -12,6 +12,7 @@ async function run(): Promise<void> {
     const prNumber = prContext?.number
     const token = core.getInput('token')
     const octokit = github.getOctokit(token)
+    // octokit.checks.create.endpoint
     console.log('prNumber => ', prNumber)
 
     if (!prNumber || isNaN(prNumber)) {
