@@ -67,11 +67,11 @@ jobs:
             -d '{"head_sha": "${{ github.event.after }}" }'
 
           curl \
-            -X POST \
+            -X PATCH \
             -H "Accept: application/vnd.github.antiope-preview+json" \
             -H "Authorization: token ${{ github.token }}" \
-            https://api.github.com/repos/${{ github.repository }}/check-runs \
-            -d '{"name":"test-one", "head_sha":"${{ github.event.after }}"}'
+            https://api.github.com/repos/${{ github.repository }}/check-runs/1127036784 \
+            -d '{"name":"test-one", "conclusion": "success"}'
 
   spawn-check-2:
     name: Check Suite 2
