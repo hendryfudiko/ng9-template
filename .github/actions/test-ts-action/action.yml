@@ -2,13 +2,21 @@ name: 'Test Custom Action'
 description: 'For Testing Purpose - description here'
 author: 'Balmon'
 inputs:
-  milliseconds: # change this
+  APP_ID:
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
-  token: # change this
+    description: 'Github Apps ID'
+  APP_PRIVATE_KEY:
     required: true
-    description: 'github token'
+    description: 'Github Apps Private Key'
+  APP_INSTALLATION_ID:
+    required: true
+    description: 'Github Apps Installation ID'
+  LINT_CHECK_NAME:
+    required: true
+    description: 'Catapa Lint Check name'
+outputs:
+  time:
+    description: 'print out current time'
 runs:
   using: 'node12'
   main: 'dist/index.js'

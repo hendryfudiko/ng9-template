@@ -5,7 +5,6 @@ name: Project Two
 
 on:
   pull_request:
-    # branches: [ master ]
     paths:
       - "libs/**"
       - "projects/project-two/**"
