@@ -272,8 +272,7 @@
           "options": {
             "tsConfig": [
               "projects/project-one/tsconfig.app.json",
-              "projects/project-one/tsconfig.spec.json",
-              "projects/project-one/e2e/tsconfig.json"
+              "projects/project-one/tsconfig.spec.json"
             ],
             "exclude": [
               "**/node_modules/**"
@@ -382,8 +381,7 @@
           "options": {
             "tsConfig": [
               "projects/project-two/tsconfig.app.json",
-              "projects/project-two/tsconfig.spec.json",
-              "projects/project-two/e2e/tsconfig.json"
+              "projects/project-two/tsconfig.spec.json"
             ],
             "exclude": [
               "**/node_modules/**"
